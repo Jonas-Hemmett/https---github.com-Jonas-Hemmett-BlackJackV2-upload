@@ -25,14 +25,14 @@ def handSum(hand):
 def stand(userHand, dealerHand, deck):
     return dealerScore(userHand, dealerHand, deck)
 
-def hitHelper(userHand, dealerHand, deck, memoVal=None, numHits=1):
+def hit(userHand, dealerHand, deck, memoVal=None):
     if memoVal is None:
         memoVal = {}
 
     userVal = handSum(userHand)
     dealerVal = handSum(dealerHand)
 
-    key = (userVal, dealerVal, numHits)
+    key = (userVal, dealerVal)
     if key in memoVal:
         return memoVal[key]
     
@@ -41,7 +41,7 @@ def hitHelper(userHand, dealerHand, deck, memoVal=None, numHits=1):
         memoVal[key] = ev
         return ev 
     
-    if userVal == 21 or numHits == 0:
+    if userVal == 21:
         ev = stand(userHand, dealerHand, deck)
         memoVal[key] = ev
         return ev
@@ -58,32 +58,45 @@ def hitHelper(userHand, dealerHand, deck, memoVal=None, numHits=1):
             userHandNew.append(card)
 
             weight = deck[card] / totalCards
-            ev += hitHelper(userHandNew, dealerHand, deck, memoVal, numHits - 1) * weight
+            ev += hit(userHandNew, dealerHand, deck, memoVal) * weight
     
-    memoVal[key] = ev
-    return ev
-
-def hit(userHand, dealerHand, deck, memoVal={}):
-
-    userVal = handSum(userHand)
-    evList = []
-
-    hitHeuristic = 1
-    if userVal < 9:
-        hitHeuristic = 5
-    elif userVal < 11:
-        hitHeuristic = 3
-    elif userVal < 16:
-        hitHeuristic = 2
+    standEv = stand(userHand, dealerHand, deck)
     
-    for numHits in range(1, hitHeuristic + 1):
-        evList.append(hitHelper(userHand, dealerHand, deck, memoVal, numHits))
+    if ev > standEv:
+        memoVal[key] = ev
+        return ev
+    else:
+        memoVal[key] = standEv
+        return standEv
 
-    return max(evList)
+def split(userHand, dealerHand, deck):
+    if len(userHand) != 2 or userHand[0] != userHand[1]:
+        return -1
 
+    totalCards = sum(deck[card] for card in deck)
+    ev = 0
+
+
+    # like, hit atleast once
+    for card in deck:
+        if deck[card]:
+            userHandNew = [userHand[0], card]  
+            weight = deck[card] / totalCards
+            ev += weight * hit(userHandNew, dealerHand, deck)
+
+    return 2 * ev
 
 def doubleDown(userHand, dealerHand, deck):
-    return 2 * hitHelper(userHand, dealerHand, deck)
+    totalCards = sum(deck[card] for card in deck)
+    ev = 0
+
+    # like, hit atleast once
+    for card in deck:
+        if deck[card]:
+            weight = deck[card] / totalCards
+            ev += weight * stand(userHand, dealerHand, deck)
+
+    return 2 * ev
 
 def dealerScore(userHand, dealerHand, deck):
     dealerVal = handSum(dealerHand)
@@ -119,7 +132,9 @@ def dealerScore(userHand, dealerHand, deck):
         return 0
 
 
-userHand = [2, 3]
-dealerHand = [10]
+userHand = [7, 10]
+dealerHand = [8]
 print(hit(userHand, dealerHand, deck))
 print(stand(userHand, dealerHand, deck))
+print(split(userHand, dealerHand, deck))
+print(doubleDown(userHand, dealerHand, deck))
