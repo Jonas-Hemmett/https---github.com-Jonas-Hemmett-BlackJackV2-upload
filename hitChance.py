@@ -25,14 +25,26 @@ def handSum(hand):
 def stand(userHand, dealerHand, deck):
     return dealerScore(userHand, dealerHand, deck)
 
-def hitHelper(userHand, dealerHand, deck, numHits=1):
-    userVal = handSum(userHand)
+def hitHelper(userHand, dealerHand, deck, memoVal=None, numHits=1):
+    if memoVal is None:
+        memoVal = {}
 
+    userVal = handSum(userHand)
+    dealerVal = handSum(dealerHand)
+
+    key = (userVal, dealerVal, numHits)
+    if key in memoVal:
+        return memoVal[key]
+    
     if userVal > 21:
-        return -1
+        ev = -1
+        memoVal[key] = ev
+        return ev 
     
     if userVal == 21 or numHits == 0:
-        return stand(userHand, dealerHand, deck)
+        ev = stand(userHand, dealerHand, deck)
+        memoVal[key] = ev
+        return ev
     
     ev = 0
     totalCards = sum(deck[card] for card in deck)
@@ -46,11 +58,13 @@ def hitHelper(userHand, dealerHand, deck, numHits=1):
             userHandNew.append(card)
 
             weight = deck[card] / totalCards
-            ev += hitHelper(userHandNew, dealerHand, deck, numHits - 1) * weight
+            ev += hitHelper(userHandNew, dealerHand, deck, memoVal, numHits - 1) * weight
     
+    memoVal[key] = ev
     return ev
 
-def hit(userHand, dealerHand, deck):
+def hit(userHand, dealerHand, deck, memoVal={}):
+
     userVal = handSum(userHand)
     evList = []
 
@@ -63,9 +77,8 @@ def hit(userHand, dealerHand, deck):
         hitHeuristic = 2
     
     for numHits in range(1, hitHeuristic + 1):
-        evList.append(hitHelper(userHand, dealerHand, deck, numHits))
+        evList.append(hitHelper(userHand, dealerHand, deck, memoVal, numHits))
 
-    print(evList)
     return max(evList)
 
 
