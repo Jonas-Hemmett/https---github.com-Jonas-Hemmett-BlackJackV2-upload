@@ -33,6 +33,7 @@ def hit(userHand, dealerHand, deck, memoVal=None):
     dealerVal = handSum(dealerHand)
 
     key = (userVal, dealerVal)
+
     if key in memoVal:
         return memoVal[key]
     
@@ -62,6 +63,7 @@ def hit(userHand, dealerHand, deck, memoVal=None):
     
     standEv = stand(userHand, dealerHand, deck)
     
+    # Make to pick standEv if standEv = hitEv
     if ev > standEv:
         memoVal[key] = ev
         return ev
@@ -132,9 +134,32 @@ def dealerScore(userHand, dealerHand, deck):
         return 0
 
 
-userHand = [7, 10]
-dealerHand = [8]
-print(hit(userHand, dealerHand, deck))
-print(stand(userHand, dealerHand, deck))
-print(split(userHand, dealerHand, deck))
-print(doubleDown(userHand, dealerHand, deck))
+userHand = [8, 4]
+dealerHand = [7]
+
+standEv = stand(userHand, dealerHand, deck)
+bestEv = standEv
+bestName = "Stand"
+
+hitEv = hit(userHand, dealerHand, deck)
+if hitEv > bestEv:
+    bestEv = hitEv
+    bestName = "Hit"
+
+doubleDownEv = doubleDown(userHand, dealerHand, deck)
+if doubleDownEv > bestEv:
+    bestEv = doubleDownEv
+    bestName = "Double Down"
+
+splitEv = split(userHand, dealerHand, deck)
+if splitEv > bestEv:
+    bestEv = splitEv
+    bestName = "Split"
+
+print("- Expected Values -")
+print(f"Stand: {standEv}")
+print(f"Hit: {hitEv}")
+print(f"Double Down: {doubleDownEv}")
+print(f"Split: {splitEv}")
+print("- Best Move -")
+print(f"Best: {bestName}")
