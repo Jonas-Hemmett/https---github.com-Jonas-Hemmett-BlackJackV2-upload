@@ -96,7 +96,9 @@ def doubleDown(userHand, dealerHand, deck):
     for card in deck:
         if deck[card]:
             weight = deck[card] / totalCards
-            ev += weight * stand(userHand, dealerHand, deck)
+            userHandNew = userHand.copy()
+            userHandNew.append(card)
+            ev += weight * stand(userHandNew, dealerHand, deck)
 
     return 2 * ev
 
@@ -134,7 +136,7 @@ def dealerScore(userHand, dealerHand, deck):
         return 0
 
 
-userHand = [8, 4]
+userHand = [7, 4]
 dealerHand = [7]
 
 standEv = stand(userHand, dealerHand, deck)
