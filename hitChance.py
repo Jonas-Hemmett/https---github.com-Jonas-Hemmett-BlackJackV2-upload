@@ -136,7 +136,7 @@ def dealerScore(userHand, dealerHand, deck):
         return 0
 
 
-userHand = [7, 4]
+userHand = [4, 2]
 dealerHand = [7]
 
 standEv = stand(userHand, dealerHand, deck)
