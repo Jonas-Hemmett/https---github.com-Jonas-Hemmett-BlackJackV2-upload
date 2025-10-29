@@ -1,6 +1,3 @@
-
-
-
 deck = {}
 for i in range(1, 10):
     deck[i] = 4
@@ -73,7 +70,7 @@ def hit(userHand, dealerHand, deck, memoVal=None):
 
 def split(userHand, dealerHand, deck):
     if len(userHand) != 2 or userHand[0] != userHand[1]:
-        return -1
+        return -2
 
     totalCards = sum(deck[card] for card in deck)
     ev = 0
@@ -136,8 +133,8 @@ def dealerScore(userHand, dealerHand, deck):
         return 0
 
 
-userHand = [4, 2]
-dealerHand = [7]
+userHand = [7, 4]
+dealerHand = [5]
 
 standEv = stand(userHand, dealerHand, deck)
 bestEv = standEv
@@ -159,9 +156,9 @@ if splitEv > bestEv:
     bestName = "Split"
 
 print("- Expected Values -")
-print(f"Stand: {standEv}")
-print(f"Hit: {hitEv}")
-print(f"Double Down: {doubleDownEv}")
-print(f"Split: {splitEv}")
+print(f"Stand:       {standEv:.2f}")
+print(f"Hit:         {hitEv:.2f}")
+print(f"Double Down: {doubleDownEv:.2f}")
+print(f"Split:       {splitEv:.2f}")
 print("- Best Move -")
 print(f"Best: {bestName}")
